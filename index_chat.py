@@ -24,11 +24,15 @@ def aoai_chat_model(chat):
     # Append the user's message to the messages list
     messages.append({"role": "user", "content": chat})
 
+    # Only send the last 5 messages to the API
+    recent_messages = messages[-5:]
+
+
     response_chat = openai.ChatCompletion.create(
         engine="gpt-35-turbo",
-        messages=messages,
+        messages=recent_messages,
         temperature=0.7,
-        max_tokens=200,
+        max_tokens=100,
         top_p=0.95,
         frequency_penalty=0,
         presence_penalty=0,
@@ -50,7 +54,7 @@ line_bot_api = LineBotApi(os.getenv('LINE_ACCESS_TOKEN'))
 handler1 = WebhookHandler(os.getenv('LINE_CHANNEL_SECRET'))
 
 @app.route("/")
-def saturday():
+def mewobot():
     return 'Cat Time!!!'
 
 @app.route("/callback", methods=['POST'])
