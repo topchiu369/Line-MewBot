@@ -47,7 +47,7 @@ def aoai_chat_model(chat):
 #     print(aoai_chat_model(chat))  
 
 line_bot_api = LineBotApi(os.getenv('LINE_ACCESS_TOKEN'))
-handler = WebhookHandler(os.getenv('LINE_CHANNEL_SECRET'))
+handler1 = WebhookHandler(os.getenv('LINE_CHANNEL_SECRET'))
 
 @app.route("/")
 def saturday():
@@ -65,7 +65,7 @@ def callback():
         abort(400)
     return 'OK'
 
-@handler.add(MessageEvent, message=TextMessage)
+@handler1.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     line_bot_api.reply_message(
         event.reply_token,
