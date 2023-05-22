@@ -28,7 +28,7 @@ def aoai_chat_model(chat):
         engine="gpt-35-turbo",
         messages=messages,
         temperature=0.7,
-        max_tokens=800,
+        max_tokens=200,
         top_p=0.95,
         frequency_penalty=0,
         presence_penalty=0,
