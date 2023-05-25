@@ -6,7 +6,6 @@ from linebot.exceptions import InvalidSignatureError
 from linebot.models import MessageEvent, TextMessage, TextSendMessage
 
 openai.api_type = "azure"
-openai.api_base = "https://qna-openai.openai.azure.com/"
 openai.api_version = "2023-03-15-preview"
 openai.api_key = os.getenv("OPENAI_API_KEY")
 openai.api_base = os.getenv("OPENAI_API_BASE")
@@ -43,12 +42,6 @@ def aoai_chat_model(chat):
     messages.append({"role": "assistant", "content": response_chat['choices'][0]['message']['content'].strip()})
 
     return response_chat['choices'][0]['message']['content'].strip()
-
-# while True:
-#     chat = input('來抬槓：')
-#     if chat.lower() == "沒問題了":
-#         break
-#     print(aoai_chat_model(chat))  
 
 line_bot_api = LineBotApi(os.getenv('LINE_ACCESS_TOKEN'))
 handler1 = WebhookHandler(os.getenv('LINE_CHANNEL_SECRET'))
