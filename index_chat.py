@@ -5,6 +5,7 @@ from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import MessageEvent, TextMessage, TextSendMessage
 
+# Set OpenAI API details
 openai.api_type = "azure"
 openai.api_version = "2023-03-15-preview"
 openai.api_key = os.getenv("OPENAI_API_KEY")
@@ -19,6 +20,7 @@ messages = [
                                    Refrain from responding in simplified Chinese, you will primarily respond in traditional Chinese."},
 ]
 
+# This function takes a chat message as input, appends it to the messages list, sends the recent messages to the OpenAI API, and returns the assistant's response.
 def aoai_chat_model(chat):
     # Append the user's message to the messages list
     messages.append({"role": "user", "content": chat})
@@ -26,7 +28,7 @@ def aoai_chat_model(chat):
     # Only send the last 5 messages to the API
     recent_messages = messages[-5:]
 
-
+    # Send the recent messages to the OpenAI API and get the response
     response_chat = openai.ChatCompletion.create(
         engine="gpt-35-turbo",
         messages=recent_messages,
@@ -43,13 +45,16 @@ def aoai_chat_model(chat):
 
     return response_chat['choices'][0]['message']['content'].strip()
 
+# Initialize Line API with access token and channel secret
 line_bot_api = LineBotApi(os.getenv('LINE_ACCESS_TOKEN'))
 handler1 = WebhookHandler(os.getenv('LINE_CHANNEL_SECRET'))
 
+# This route serves as a health check or landing page for the web app.
 @app.route("/")
 def mewobot():
     return 'Cat Time!!!'
 
+# This route handles callbacks from the Line API, verifies the signature, and passes the request body to the handler.
 @app.route("/callback", methods=['POST'])
 def callback():
     signature = request.headers['X-Line-Signature']
@@ -62,6 +67,7 @@ def callback():
         abort(400)
     return 'OK'
 
+# This event handler is triggered when a message event is received from the Line API. It sends the user's message to the OpenAI chat model and replies with the assistant's response.
 @handler1.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     line_bot_api.reply_message(
