@@ -8,6 +8,11 @@ MewBot is a LINE chatbot that knows everything about cats. It uses OpenAI's GPT-
 2. Install the required Python packages with `pip install -r requirements.txt`.
 3. Set your environment variables in a `.env` file in the root directory of the project. This file should include your LINE Channel Secret, LINE Channel Access Token, OpenAI API Key, and OpenAI API Base URL.
 
+## Tutorial
+
+For a step-by-step guide on setting up and using MewBot, check out this [運用 Azure OpenAI 服務打造聰明的 LINE 聊天機器人 — 實作教學](https://medium.com/@ro5112/%E9%81%8B%E7%94%A8-azure-openai-%E6%9C%8D%E5%8B%99%E6%89%93%E9%80%A0%E8%81%B0%E6%98%8E%E7%9A%84-line-%E8%81%8A%E5%A4%A9%E6%A9%9F%E5%99%A8%E4%BA%BA-%E5%AF%A6%E4%BD%9C%E6%95%99%E5%AD%B8-7dfa5a8b2a50).
+
+
 ## Running the Bot
 
 To run the bot locally, you need to set up a tunneling service like ngrok to expose your local server to the internet. Once you've set up ngrok or a similar service, you can run the bot with `python index_chat.py`.
