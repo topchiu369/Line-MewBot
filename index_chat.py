@@ -32,7 +32,7 @@ def aoai_chat_model(chat):
 
     # Send the recent messages to the OpenAI API and get the response
     response_chat = openai.ChatCompletion.create(
-        engine="gpt-35-turbo",
+        engine="GPT35_Dev",
         messages=recent_messages,
         temperature=0.7,
         max_tokens=150,
