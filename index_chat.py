@@ -72,10 +72,11 @@ def callback():
 # This event handler is triggered when a message event is received from the Line API. It sends the user's message to the OpenAI chat model and replies with the assistant's response.
 @handler1.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-    line_bot_api.reply_message(
-        event.reply_token,
-        TextSendMessage(text=aoai_chat_model(event.message.text))
-    )
+    if event.message.text.startswith("gpt "):
+        line_bot_api.reply_message(
+            event.reply_token,
+            TextSendMessage(text=aoai_chat_model(event.message.text))
+        )
 
 if __name__ == "__main__":
     app.run()
