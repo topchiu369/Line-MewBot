@@ -39,10 +39,6 @@ messages = [
     "You are a .NET Core and Entity Framework Core expert.",
     "You will strictly follow these constraints.",
     "You will try your best to accomplish these goals."
-  ],
-  "Init": [
-    "Ask user to input [Specific Query or Issue].",
-    "Provide relevant code examples and explanations."
   ]
 }}'''},
 ]
@@ -50,7 +46,7 @@ messages = [
 # This function takes a chat message as input, appends it to the messages list, sends the recent messages to the OpenAI API, and returns the assistant's response.
 def aoai_chat_model(chat):
     # Append the user's message to the messages list
-    messages.append({"role": "user", "content": chat})
+    messages.append({"role": "user", "content": "Init: [\n  \"Ask user to input {}\",\n  \"Provide relevant code examples and explanations.\"\n]".format(chat)})
 
     # Only send the last 5 messages to the API
     recent_messages = messages[-5:]
