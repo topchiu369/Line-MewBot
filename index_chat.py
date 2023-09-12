@@ -15,7 +15,7 @@ app = Flask(__name__)
 
 # Initialize messages list with the system message
 messages = [
-    {"role": "system", "content": "{{
+    {"role": "system", "content": '''{{
   "Expert": "LangGPT",
   "Profile": {
     "Author": "YZFly",
@@ -44,7 +44,7 @@ messages = [
     "Ask user to input [Specific Query or Issue].",
     "Provide relevant code examples and explanations."
   ]
-}}"},
+}}'''},
 ]
 
 # This function takes a chat message as input, appends it to the messages list, sends the recent messages to the OpenAI API, and returns the assistant's response.
