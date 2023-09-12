@@ -46,7 +46,7 @@ messages = [
 # This function takes a chat message as input, appends it to the messages list, sends the recent messages to the OpenAI API, and returns the assistant's response.
 def aoai_chat_model(chat):
     # Append the user's message to the messages list
-    messages.append({"role": "user", "content": "Init: [\n  \"Ask user to input {}\",\n  \"Provide relevant code examples and explanations.\"\n]".format(chat)})
+    messages.append({"role": "user", "content": chat})
 
     # Only send the last 5 messages to the API
     recent_messages = messages[-5:]
