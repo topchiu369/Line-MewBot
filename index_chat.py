@@ -138,16 +138,16 @@ def mention_handler(body, say):
 
     mention = f"<@{SLACK_BOT_USER_ID}>"
     text = text.replace(mention, "").strip()
-    logging.info("Received text: " + text.replace("\n", " "))
+    app.logger.info("Received text: " + text.replace("\n", " "))
 
     say("Sure, I'll get right on that!")
     # response = my_function(text)
     response = aoai_chat_model(text)
-    logging.info("Generated response: " + response.replace("\n", " "))
+    app.logger.info("Generated response: " + response.replace("\n", " "))
     say(response)
 
 
-@flask_app.route("/slack/events", methods=["POST"])
+@app.route("/slack/events", methods=["POST"])
 @require_slack_verification
 def slack_events():
     return handler.handle(request)
