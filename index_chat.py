@@ -83,7 +83,7 @@ handler1 = WebhookHandler(os.getenv('LINE_CHANNEL_SECRET'))
 def mewobot():
     return 'Cat Time!!!'
 
-@app.route("/gpt/chat", methods=["POST"])
+@app.route("/gpt/chat", methods=["GET"])
 def gptchat():
     user_message = request.json.get('event')['text']
     text = aoai_chat_model(user_message)
