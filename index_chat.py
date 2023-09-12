@@ -16,8 +16,8 @@ openai.api_key = os.getenv("OPENAI_API_KEY")
 openai.api_base = os.getenv("OPENAI_API_BASE")
 bot_token = os.getenv("SLACK_TOKEN")
 verification_token = os.getenv("V_TOKEN")
-SLACK_SIGNING_SECRET = os.getenv["SLACK_SIGNING_SECRET"]
-SLACK_BOT_USER_ID = os.getenv["SLACK_BOT_USER_ID"]
+SLACK_SIGNING_SECRET = os.getenv("SLACK_SIGNING_SECRET")
+SLACK_BOT_USER_ID = os.getenv("SLACK_BOT_USER_ID")
 
 app = App(token=SLACK_BOT_TOKEN)
 signature_verifier = SignatureVerifier(SLACK_SIGNING_SECRET)
