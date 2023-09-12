@@ -1,15 +1,20 @@
-from flask import Flask, request, abort
+from flask import Flask, request, abort, jsonify
 import os
 import openai
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import MessageEvent, TextMessage, TextSendMessage
+from slack_sdk import WebClient
+from slack_sdk.errors import SlackApiError
 
 # Set OpenAI API details
 openai.api_type = "azure"
 openai.api_version = "2023-05-15"
 openai.api_key = os.getenv("OPENAI_API_KEY")
 openai.api_base = os.getenv("OPENAI_API_BASE")
+bot_token = os.getenv("SLACK_TOKEN")
+
+slack_client = WebClient(token=bot_token)
 
 app = Flask(__name__)
 
@@ -76,6 +81,25 @@ handler1 = WebhookHandler(os.getenv('LINE_CHANNEL_SECRET'))
 @app.route("/")
 def mewobot():
     return 'Cat Time!!!'
+
+@app.route('/slack/events', methods=['POST'])
+def slack_events():
+    # 驗證 Slack 請求
+    if request.json.get('token') == bot_token:
+        # 獲取用戶發送的消息
+        user_message = request.json.get('text')
+        
+        # 在這裡您可以根據用戶消息進行處理
+        # 這是一個簡單的示例，您可以自行擴展
+        response_message = f'您說：{user_message}'
+        
+        # 向 Slack 發送回應
+        try:
+            slack_client.chat_postMessage(channel=request.json.get('channel_id'), text=response_message)
+        except SlackApiError as e:
+            print("消息發送失敗：", e.response["error"])
+
+        return jsonify({'message': '消息已處理'})
 
 # This route handles callbacks from the Line API, verifies the signature, and passes the request body to the handler.
 @app.route("/callback", methods=['POST'])
