@@ -132,7 +132,7 @@ def get_bot_user_id():
     except SlackApiError as e:
         print(f"Error: {e}")
 
-@app.event("app_mention")                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
+@slackapp.event("app_mention")                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
 def mention_handler(body, say):
     text = body["event"]["text"]
 
