@@ -6,6 +6,7 @@ from linebot.exceptions import InvalidSignatureError
 from linebot.models import MessageEvent, TextMessage, TextSendMessage
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
+from slack_sdk.signature import SignatureVerifier
 from slack_bolt.adapter.flask import SlackRequestHandler
 from slack_bolt import App
 
