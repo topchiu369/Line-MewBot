@@ -20,11 +20,11 @@ verification_token = os.getenv("V_TOKEN")
 SLACK_SIGNING_SECRET = os.getenv("SLACK_SIGNING_SECRET")
 SLACK_BOT_USER_ID = os.getenv("SLACK_BOT_USER_ID")
 
-app = App(token=SLACK_BOT_TOKEN)
+slackapp = App(token=bot_token)
 signature_verifier = SignatureVerifier(SLACK_SIGNING_SECRET)
 
 app = Flask(__name__)
-handler = SlackRequestHandler(app)
+handler = SlackRequestHandler(slackapp)
 
 # Initialize messages list with the system message
 messages = [
@@ -126,7 +126,7 @@ def get_bot_user_id():
     """
     try:
         # Initialize the Slack client with your bot token
-        slack_client = WebClient(token=os.environ["SLACK_BOT_TOKEN"])
+        slack_client = WebClient(token=bot_token)
         response = slack_client.auth_test()
         return response["user_id"]
     except SlackApiError as e:
