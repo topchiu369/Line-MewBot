@@ -6,6 +6,8 @@ from linebot.exceptions import InvalidSignatureError
 from linebot.models import MessageEvent, TextMessage, TextSendMessage
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
+from slack_bolt.adapter.flask import SlackRequestHandler
+from slack_bolt import App
 
 # Set OpenAI API details
 openai.api_type = "azure"
@@ -14,10 +16,14 @@ openai.api_key = os.getenv("OPENAI_API_KEY")
 openai.api_base = os.getenv("OPENAI_API_BASE")
 bot_token = os.getenv("SLACK_TOKEN")
 verification_token = os.getenv("V_TOKEN")
+SLACK_SIGNING_SECRET = os.getenv["SLACK_SIGNING_SECRET"]
+SLACK_BOT_USER_ID = os.getenv["SLACK_BOT_USER_ID"]
 
-slack_client = WebClient(token=bot_token)
+app = App(token=SLACK_BOT_TOKEN)
+signature_verifier = SignatureVerifier(SLACK_SIGNING_SECRET)
 
 app = Flask(__name__)
+handler = SlackRequestHandler(app)
 
 # Initialize messages list with the system message
 messages = [
@@ -83,32 +89,67 @@ handler1 = WebhookHandler(os.getenv('LINE_CHANNEL_SECRET'))
 def mewobot():
     return 'Cat Time!!!'
 
-@app.route('/slack/events', methods=['POST'])
+def require_slack_verification(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not verify_slack_request():
+            abort(403)
+        return f(*args, **kwargs)
+
+    return decorated_function
+
+
+def verify_slack_request():
+    # Get the request headers
+    timestamp = request.headers.get("X-Slack-Request-Timestamp", "")
+    signature = request.headers.get("X-Slack-Signature", "")
+
+    # Check if the timestamp is within five minutes of the current time
+    current_timestamp = int(time.time())
+    if abs(current_timestamp - int(timestamp)) > 60 * 5:
+        return False
+
+    # Verify the request signature
+    return signature_verifier.is_valid(
+        body=request.get_data().decode("utf-8"),
+        timestamp=timestamp,
+        signature=signature,
+    )
+
+
+def get_bot_user_id():
+    """
+    Get the bot user ID using the Slack API.
+    Returns:
+        str: The bot user ID.
+    """
+    try:
+        # Initialize the Slack client with your bot token
+        slack_client = WebClient(token=os.environ["SLACK_BOT_TOKEN"])
+        response = slack_client.auth_test()
+        return response["user_id"]
+    except SlackApiError as e:
+        print(f"Error: {e}")
+
+@app.event("app_mention")                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
+def mention_handler(body, say):
+    text = body["event"]["text"]
+
+    mention = f"<@{SLACK_BOT_USER_ID}>"
+    text = text.replace(mention, "").strip()
+    logging.info("Received text: " + text.replace("\n", " "))
+
+    say("Sure, I'll get right on that!")
+    # response = my_function(text)
+    response = aoai_chat_model(text)
+    logging.info("Generated response: " + response.replace("\n", " "))
+    say(response)
+
+
+@flask_app.route("/slack/events", methods=["POST"])
+@require_slack_verification
 def slack_events():
-    # 驗證 Slack 請求
-    if request.json.get('token') == verification_token:
-        # 獲取事件類型
-        event_type = request.json.get('type')
-
-        if event_type == 'url_verification':
-            # Slack事件驗證挑戰
-            challenge = request.json.get('challenge')
-            return jsonify({'challenge': challenge})
-
-        elif event_type == 'message':
-            # Slack用戶發送的消息
-            user_message = request.json.get('event')['text']
-
-            # 在這裡您可以根據用戶消息進行處理
-            response_message = f'您說：{user_message}'
-
-            # 向 Slack 發送回應
-            try:
-                slack_client.chat_postMessage(channel=request.json.get('event')['channel'], text=response_message)
-            except SlackApiError as e:
-                print("消息發送失敗：", e.response["error"])
-
-    return jsonify({'message': '事件已處理'})
+    return handler.handle(request)
 
 # This route handles callbacks from the Line API, verifies the signature, and passes the request body to the handler.
 @app.route("/callback", methods=['POST'])
