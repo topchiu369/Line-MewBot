@@ -13,6 +13,7 @@ openai.api_version = "2023-05-15"
 openai.api_key = os.getenv("OPENAI_API_KEY")
 openai.api_base = os.getenv("OPENAI_API_BASE")
 bot_token = os.getenv("SLACK_TOKEN")
+verification_token = os.getenv("V_TOKEN")
 
 slack_client = WebClient(token=bot_token)
 
@@ -85,21 +86,29 @@ def mewobot():
 @app.route('/slack/events', methods=['POST'])
 def slack_events():
     # 驗證 Slack 請求
-    if request.json.get('token') == bot_token:
-        # 獲取用戶發送的消息
-        user_message = request.json.get('text')
-        
-        # 在這裡您可以根據用戶消息進行處理
-        # 這是一個簡單的示例，您可以自行擴展
-        response_message = f'您說：{user_message}'
-        
-        # 向 Slack 發送回應
-        try:
-            slack_client.chat_postMessage(channel=request.json.get('channel_id'), text=response_message)
-        except SlackApiError as e:
-            print("消息發送失敗：", e.response["error"])
+    if request.json.get('token') == verification_token:
+        # 獲取事件類型
+        event_type = request.json.get('type')
 
-        return jsonify({'message': '消息已處理'})
+        if event_type == 'url_verification':
+            # Slack事件驗證挑戰
+            challenge = request.json.get('challenge')
+            return jsonify({'challenge': challenge})
+
+        elif event_type == 'message':
+            # Slack用戶發送的消息
+            user_message = request.json.get('event')['text']
+
+            # 在這裡您可以根據用戶消息進行處理
+            response_message = f'您說：{user_message}'
+
+            # 向 Slack 發送回應
+            try:
+                slack_client.chat_postMessage(channel=request.json.get('event')['channel'], text=response_message)
+            except SlackApiError as e:
+                print("消息發送失敗：", e.response["error"])
+
+    return jsonify({'message': '事件已處理'})
 
 # This route handles callbacks from the Line API, verifies the signature, and passes the request body to the handler.
 @app.route("/callback", methods=['POST'])
