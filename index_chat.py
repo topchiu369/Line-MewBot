@@ -85,13 +85,14 @@ def mewobot():
 
 @app.route("/gpt/chat", methods=["POST"])
 def gptchat():
-    user_message = request.json.get('event')['text']
-    text = aoai_chat_model(user_message)
-    #try:
-        #slack_client.chat_postMessage(channel=request.json.get('event')['channel'], text=text)
-    #except SlackApiError as e:
-        #print("消息發送失敗：", e.response["error"])
-    return jsonify({"response_type": "in_channel","text": text})
+    if request.form['token'] == verification_token:
+        user_message = request.json.get('event')['text']
+        text = aoai_chat_model(user_message)
+        #try:
+            #slack_client.chat_postMessage(channel=request.json.get('event')['channel'], text=text)
+        #except SlackApiError as e:
+            #print("消息發送失敗：", e.response["error"])
+        return jsonify({"response_type": "in_channel","text": text})
 
 @app.route("/slack/events", methods=["POST"])
 def slack_events():
