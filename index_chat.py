@@ -86,7 +86,7 @@ def mewobot():
 @app.route("/gpt/chat", methods=["POST"])
 def gptchat():
     if request.form['token'] == verification_token:
-        user_message = request.json.get('event')['text']
+        user_message = request.form.get('text')
         text = aoai_chat_model(user_message)
         #try:
             #slack_client.chat_postMessage(channel=request.json.get('event')['channel'], text=text)
